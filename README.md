@@ -6,4 +6,5 @@
 </div>
 
 ## 🗞️ News  
+- Our paper has been accepted by CVPRF 2026.
 - Our paper has been released. Stay tuned for the code release!
