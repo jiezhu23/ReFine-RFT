@@ -1,0 +1,71 @@
+# DataLoader configurations
+# dataset_name: "laolao77/ViRFT_CLS_car196_4shot" # load from huggingface
+# dataset_name: "laolao77/ViRFT_CLS_flower_4_shot" # load from huggingface
+dataset_name: "laolao77/ViRFT_CLS_fgvc_aircraft_4_shot" # load from huggingface
+# dataset_name: "laolao77/ViRFT_CLS_pets37_4shot" # load from huggingface
+
+use_cot: false
+dataset_cache_dir: "./share_data"
+workers: 4
+prefetch_factor: 2
+
+# Training configurations
+model: "Qwen/Qwen2-VL-2B-Instruct"
+train_method: "grpo" # grpo or sft
+model_cache_dir: "./share_models/"
+output_dir: ${model_cache_dir}
+api_url: "http://127.0.0.1:8001/v1"
+
+prompt_type: "cot" # cot or ao (answer-only)
+max_pixels: 50176 # 224 x 224
+max_prompt_length: 1024
+max_completion_length: ${max_prompt_length}
+num_train_epochs: 8
+max_steps: 200 # if not null, will override num_train_epochs
+per_device_train_batch_size: 1
+num_generations: 8
+gradient_accumulation_steps: 4
+per_device_eval_batch_size : 32
+gradient_checkpointing: false
+mixed_precision: false
+bf16: true
+deepspeed: src/refinerft/configs/zero3.json
+eval_steps: 50
+eval_delay: 200
+save_steps: ${eval_steps}
+seed: 42
+reward_funcs:
+- format
+# - attribute_reward
+- accuracy
+# - reasoning
+- think_length
+reward_weights: null
+# - 1
+# - 1
+# - 0.34
+min_len: 70
+max_len: 100
+margin: 10
+
+# LoRA configurations
+use_lora: true # if false, will use fully fine-tuning
+lora_r: 64
+lora_alpha: 128
+lora_dropout: 0.0
+lora_target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+# Optimizer configurations
+# learning_rate: 1.0e-6 # for fully finetuning
+learning_rate: 2.0e-5 # for lora
+beta: 0.04 # weight for KL coefficient, default is 0.04
+weight_decay: 0.0
+warmup_ratio: 0.0
+lr_scheduler_type: "linear"
+
+# Logging configurations
+use_wandb: true
+wandb_project: "refinerft_thinklength"
+# wandb_run_name: "lora-allcate-5shot-grpo-cls_reward-ao_prompt-128r"
+wandb_run_name: "aircrafts-4-shot-grpo-lora-r64a128-think70"
+logging_steps: 1
