@@ -170,7 +170,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+
 # Temp folders
+*query_slice*.jsonl
 /data/
 wandb/
 scripts/
